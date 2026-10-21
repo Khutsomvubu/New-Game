@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#080d18">
+  <title>EVOLVE: THE ARENA REMEMBERS</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="game-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Evolve home">
+        <span class="brand-mark">E<span>+</span></span>
+        <span class="brand-name">EVOLVE<span> / THE ARENA REMEMBERS</span></span>
+      </a>
+      <div class="topbar-actions">
+        <span class="run-label"><span class="live-dot"></span> SURVIVAL PROTOCOL</span>
+        <button class="icon-button" id="sound-button" type="button" aria-label="Mute sound" title="Toggle sound">
+          <svg id="sound-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4V5Zm4 4a5 5 0 0 1 0 6m3-9a9 9 0 0 1 0 12"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <section class="game-layout" aria-label="Evolve survival game">
+      <div class="play-column">
+        <div class="arena-frame">
+          <canvas id="game-canvas" aria-label="Top-down survival arena"></canvas>
+
+          <div class="hud">
+            <div class="hud-top">
+              <div class="health-block">
+                <div class="hud-label"><span>INTEGRITY</span><span id="health-readout">100%</span></div>
+                <div class="health-track"><div class="health-fill" id="health-fill"></div></div>
+              </div>
+              <div class="timer-block"><span class="hud-label">SURVIVED</span><strong id="timer">00:00</strong></div>
+              <div class="score-block"><span class="hud-label">SCORE</span><strong id="score">000000</strong></div>
+            </div>
+            <div class="hud-bottom">
+              <div class="tactic-chip" id="tactic-chip"><span class="chip-dot"></span><span id="tactic-label">HUNTER · SCANNING</span></div>
+              <div class="ability-status" id="ability-status">ABILITY · NONE</div>
+              <div class="streak-label" id="streak-label">◇ <span id="streak">0</span> STREAK</div>
+            </div>
+          </div>
+
+          <div class="toast" id="adaptation-toast" role="status" aria-live="polite">
+            <span class="toast-icon">⌁</span>
+            <span class="toast-copy"><small>ADAPTATION DETECTED</small><strong id="toast-message">INTERCEPTOR DEPLOYED</strong></span>
+          </div>
+
+          <div class="overlay" id="start-overlay">
+            <div class="overlay-card start-card">
+              <div class="eyebrow"><span></span> A SURVIVAL EXPERIMENT</div>
+              <h1>EVOLVE<span>:</span><br><em>THE ARENA<br>REMEMBERS</em></h1>
+              <p class="tagline">You learn the enemy. <strong>The enemy learns you.</strong></p>
+              <div class="start-stats">
+                <div><span>YOUR BEST</span><strong id="best-score">000000</strong></div>
+                <div><span>ROUND LENGTH</span><strong>90 SEC</strong></div>
+              </div>
+              <button class="primary-button" id="start-button" type="button">ENTER THE ARENA <span>↗</span></button>
+              <p class="control-hint">WASD / ARROWS TO MOVE <i>·</i> SPACE TO USE ABILITY <i>·</i> ESC TO PAUSE</p>
+            </div>
+            <div class="start-side-note"><span>01</span><span>OUTTHINK<br>THE MACHINE</span></div>
+          </div>
+
+          <div class="overlay hidden" id="pause-overlay">
+            <div class="overlay-card compact-card">
+              <div class="eyebrow"><span></span> SYSTEM PAUSED</div>
+              <h2>Catch your<br><em>breath.</em></h2>
+              <p>The arena is waiting. The enemy is learning.</p>
+              <button class="primary-button" id="resume-button" type="button">RESUME RUN <span>↗</span></button>
+              <p class="control-hint">PRESS ESC OR P TO RESUME</p>
+            </div>
+          </div>
+
+          <div class="overlay hidden" id="upgrade-overlay">
+            <div class="overlay-card upgrade-wrap">
+              <div class="eyebrow"><span></span> EVOLUTION AVAILABLE</div>
+              <h2>Choose your<br><em>advantage.</em></h2>
+              <p class="upgrade-intro">The arena pauses. Your next move is yours.</p>
+              <div class="upgrade-cards">
+                <button class="upgrade-card speed-card" type="button" data-upgrade="speed">
+                  <span class="upgrade-number">01 / MOBILITY</span><span class="upgrade-icon">↯</span>
+                  <strong>SPEED<br>BURST</strong><span class="upgrade-detail">SPACE: surge forward with a 4.5 sec speed boost.</span><span class="upgrade-action">SELECT UPGRADE <b>↗</b></span>
+                </button>
+                <button class="upgrade-card shield-card" type="button" data-upgrade="shield">
+                  <span class="upgrade-number">02 / DEFENSE</span><span class="upgrade-icon">◈</span>
+                  <strong>ENERGY<br>SHIELD</strong><span class="upgrade-detail">SPACE: block all incoming damage for 2.8 sec.</span><span class="upgrade-action">SELECT UPGRADE <b>↗</b></span>
+                </button>
+                <button class="upgrade-card pulse-card" type="button" data-upgrade="pulse">
+                  <span class="upgrade-number">03 / CONTROL</span><span class="upgrade-icon">◎</span>
+                  <strong>ENERGY<br>PULSE</strong><span class="upgrade-detail">SPACE: blast nearby enemies back and disrupt attacks.</span><span class="upgrade-action">SELECT UPGRADE <b>↗</b></span>
+                </button>
+              </div>
+              <p class="control-hint">PRESS SPACE ANY TIME TO ACTIVATE YOUR MOST RECENT READY ABILITY</p>
+            </div>
+          </div>
+
+          <div class="overlay hidden" id="gameover-overlay">
+            <div class="overlay-card gameover-card">
+              <div class="eyebrow"><span></span> RUN COMPLETE <span class="eyebrow-line"></span></div>
+              <h2 id="result-title">THE ARENA<br><em>REMEMBERS.</em></h2>
+              <div class="results-grid">
+                <div><span>FINAL SCORE</span><strong id="final-score">0</strong></div>
+                <div><span>TIME SURVIVED</span><strong id="final-time">00:00</strong></div>
+                <div><span>CRYSTALS</span><strong id="final-crystals">0</strong></div>
+                <div><span>PERSONAL BEST</span><strong id="final-best">0</strong></div>
+              </div>
+              <div class="adaptation-summary"><span class="summary-title">TACTICS THAT FOUND YOU</span><div id="tactics-summary"></div></div>
+              <button class="primary-button" id="again-button" type="button">PLAY AGAIN <span>↗</span></button>
+              <p class="control-hint">EVERY RUN TEACHES THE ARENA SOMETHING NEW.</p>
+            </div>
+          </div>
+
+          <button class="pause-button" id="pause-button" type="button" aria-label="Pause game" title="Pause (Esc)" hidden>Ⅱ</button>
+          <div class="mobile-controls" id="mobile-controls" aria-label="Touch game controls">
+            <div class="joystick" id="joystick" aria-label="Move player with joystick"><div class="joystick-knob" id="joystick-knob"></div></div>
+            <button class="ability-button" id="ability-button" type="button" aria-label="Activate ability">SPACE<br><span>ABILITY</span></button>
+          </div>
+        </div>
+        <div class="under-arena">
+          <div class="legend">
+            <span><i class="legend-player"></i> YOU</span><span><i class="legend-crystal">◇</i> ENERGY</span>
+            <span><i class="legend-hunter"></i> HUNTER</span><span><i class="legend-interceptor"></i> INTERCEPTOR</span><span><i class="legend-flanker"></i> FLANKER</span>
+          </div>
+          <div class="arena-status"><span class="live-dot"></span><span id="status-text">AWAITING PILOT INPUT</span></div>
+        </div>
+      </div>
+
+      <aside class="intel-panel">
+        <div class="panel-heading"><span>FIELD INTELLIGENCE</span><span class="panel-index">SYS.01</span></div>
+        <div class="intel-feature">
+          <div class="intel-icon">⌁</div>
+          <div><span class="intel-kicker">LIVE ENEMY ANALYSIS</span><h2>The arena<br>is watching.</h2></div>
+          <p>Your movement leaves a pattern. The enemy learns it, then changes its approach.</p>
+        </div>
+        <div class="tactic-list">
+          <div class="tactic-row" data-tactic="hunter"><span class="tactic-symbol hunter-symbol">↗</span><span class="tactic-info"><strong>HUNTER</strong><small>Tracks your current position</small></span><span class="tactic-state" id="state-hunter">BASELINE</span></div>
+          <div class="tactic-row" data-tactic="interceptor"><span class="tactic-symbol interceptor-symbol">⌖</span><span class="tactic-info"><strong>INTERCEPTOR</strong><small>Predicts where you're headed</small></span><span class="tactic-state" id="state-interceptor">DORMANT</span></div>
+          <div class="tactic-row" data-tactic="flanker"><span class="tactic-symbol flanker-symbol">⤴</span><span class="tactic-info"><strong>FLANKER</strong><small>Pressures players who hold ground</small></span><span class="tactic-state" id="state-flanker">DORMANT</span></div>
+        </div>
+        <div class="panel-divider"></div>
+        <div class="intel-section">
+          <div class="panel-heading"><span>FIELD MANUAL</span><span class="panel-index">HOW TO SURVIVE</span></div>
+          <div class="manual-row"><span class="manual-key">W A S D</span><span>MOVE THROUGH THE ARENA</span></div>
+          <div class="manual-row"><span class="manual-key">SPACE</span><span>ACTIVATE A READY ABILITY</span></div>
+          <div class="manual-row"><span class="manual-key">ESC / P</span><span>PAUSE OR RESUME</span></div>
+          <div class="manual-row"><span class="manual-key">◇</span><span>COLLECT CRYSTALS FOR POINTS</span></div>
+          <div class="manual-note">Stay moving. Chain crystals for a score multiplier. Reach milestones to choose an upgrade.</div>
+        </div>
+        <div class="intel-footer"><span>EVOLVE / ARENA INTELLIGENCE DIVISION</span><span>V.01</span></div>
+      </aside>
+    </section>
+    <footer class="page-footer"><span>EVOLVE / THE ARENA REMEMBERS</span><span>ADAPT. SURVIVE. EVOLVE.</span><span>90-SECOND SURVIVAL SIMULATION</span></footer>
+  </main>
+  <script src="game.js"></script>
+</body>
+</html>
